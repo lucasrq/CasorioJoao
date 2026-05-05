@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>João & Vitória | Nosso Casamento</title>
+    <meta name="description" content="Site oficial de casamento de João e Vitória.">
+    <link rel="icon" type="image/png" href="images/VJ - PNG.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="images/imagemigreja.png" fetchpriority="high">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- LOADING SCREEN - ENVELOPE -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-container">
+            <!-- Skip Button -->
+            <button id="skipBtn" class="skip-btn" title="Pular animação">
+                <span>Pular</span>
+            </button>
+
+            <!-- Envelope Container -->
+            <div class="envelope-wrapper">
+                <!-- Backdrop light -->
+                <div class="loading-backdrop"></div>
+
+                <!-- Main Envelope -->
+                <div class="envelope" id="envelope">
+                    <!-- Envelope Body -->
+                    <svg class="envelope-svg" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Left flap -->
+                        <polygon points="160,100 40,60 40,140" fill="none" stroke="url(#envelopeGradient)" stroke-width="2" class="envelope-flap left-flap"/>
+                        <!-- Right flap -->
+                        <polygon points="160,100 280,60 280,140" fill="none" stroke="url(#envelopeGradient)" stroke-width="2" class="envelope-flap right-flap"/>
+                        <!-- Front face -->
+                        <rect x="40" y="60" width="240" height="80" fill="url(#envelopeGradient)" stroke="url(#envelopeGradient)" stroke-width="2" class="envelope-face"/>
+                        
+                        <!-- Defs for gradients -->
+                        <defs>
+                            <linearGradient id="envelopeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f9fbff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#f0f5fb;stop-opacity:1" />
+                            </linearGradient>
+                            <radialGradient id="waxSeal" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#a8c5dd;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#7f9dbd;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#58779a;stop-opacity:1" />
+                            </radialGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                    </svg>
+
+                    <!-- Wax Seal Container -->
+                    <div class="seal-container" id="sealContainer">
+                        <!-- Seal glow effect -->
+                        <div class="seal-glow"></div>
+                        
+                        <!-- Main Seal -->
+                        <svg class="wax-seal" id="sealSvg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Seal circle -->
+                            <circle cx="50" cy="50" r="45" fill="url(#waxSeal)" filter="url(#glow)" class="seal-circle"/>
+                            <!-- Seal ornament - decorative pattern -->
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e8f0f9" stroke-width="1.5" opacity="0.8"/>
+                            <circle cx="50" cy="50" r="35" fill="none" stroke="#58779a" stroke-width="0.8" opacity="0.5"/>
+                            <!-- Center ornament -->
+                            <circle cx="50" cy="50" r="25" fill="none" stroke="#e8f0f9" stroke-width="2"/>
+                            <polygon points="50,35 60,48 50,65 40,48" fill="none" stroke="#e8f0f9" stroke-width="1.5"/>
+                        </svg>
+
+                        <!-- Seal cracks (will be animated) -->
+                        <svg class="seal-cracks" id="cracksSvg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="crack-line crack1" d="M 50 50 Q 45 35 50 20" fill="none" stroke="#58779a" stroke-width="2.5" stroke-linecap="round"/>
+                            <path class="crack-line crack2" d="M 50 50 Q 60 35 55 15" fill="none" stroke="#7f9dbd" stroke-width="1.5" stroke-linecap="round"/>
+                            <path class="crack-line crack3" d="M 50 50 Q 65 45 80 50" fill="none" stroke="#58779a" stroke-width="2" stroke-linecap="round"/>
+                            <path class="crack-line crack4" d="M 50 50 Q 35 55 25 65" fill="none" stroke="#7f9dbd" stroke-width="1.5" stroke-linecap="round"/>
+                            <path class="crack-line crack5" d="M 50 50 Q 58 68 50 85" fill="none" stroke="#58779a" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+
+                        <!-- Particles container -->
+                        <div class="particles-container" id="particlesContainer"></div>
+                    </div>
+                </div>
+
+                <!-- Inner light effect -->
+                <div class="envelope-light" id="envelopeLight"></div>
+
+                <!-- Message / Light burst -->
+                <div class="light-burst" id="lightBurst">
+                    <div class="burst-particle burst-1"></div>
+                    <div class="burst-particle burst-2"></div>
+                    <div class="burst-particle burst-3"></div>
+                    <div class="burst-particle burst-4"></div>
+                    <div class="burst-particle burst-5"></div>
+                    <div class="burst-particle burst-6"></div>
+                </div>
+
+                <!-- Dust particles -->
+                <div class="dust-container" id="dustContainer"></div>
+
+                <!-- Loading text -->
+                <div class="loading-text">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <header class="site-header">
+        <nav class="nav container">
+            <a href="#inicio" class="brand">João <span>&</span> Vitória</a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+            <ul class="menu" id="menu">
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#historia">Our Love Story</a></li>
+                <li><a href="#detalhes">Details</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#rsvp">RSVP</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="inicio">
+            <div class="hero-church" aria-hidden="true"></div>
+            <div class="hero-overlay" aria-hidden="true"></div>
+            <div class="hero-content container reveal">
+                <div class="hero-monogram-wrap">
+                    <img src="images/VJ - PNG.png" alt="Monograma João e Vitória" class="hero-monogram">
+                </div>
+                <p class="eyebrow">10 Outubro 2026 | 16:00</p>
+                <p class="hero-text">Com muita alegria, convidamos você para viver esse capítulo inesquecível com a gente.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#rsvp">Confirmar presença</a>
+                    <a class="btn btn-secondary" href="#detalhes">Ver detalhes</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="verse-section">
+            <div class="container reveal">
+                <p class="section-label">Rute 1:16-18</p>
+                <blockquote>
+                    "...Aonde você for, eu irei. Onde você ficar, eu ficarei. O seu povo será o meu povo,
+                    e o seu Deus será o meu Deus... Somente a morte nos poderá separar."
+                </blockquote>
+            </div>
+        </section>
+
+        <section class="countdown-section">
+            <div class="container reveal">
+                <p class="section-label">Contagem Regressiva</p>
+                <h2>Faltam poucos dias para o nosso "sim"</h2>
+                <div class="countdown" id="countdown">
+                    <div class="count-card"><span id="days">0</span><small>Dias</small></div>
+                    <div class="count-card"><span id="hours">0</span><small>Horas</small></div>
+                    <div class="count-card"><span id="minutes">0</span><small>Minutos</small></div>
+                    <div class="count-card"><span id="seconds">0</span><small>Segundos</small></div>
+                </div>
+            </div>
+        </section>
+        <section class="story-section" id="historia">
+            <div class="container">
+                <div class="section-head reveal">
+                    <p class="section-label">Our Love Story</p>
+                    <h2>Nossa jornada, capítulo por capítulo</h2>
+                    <p>Momentos que construíram nossa história e trouxeram a gente até aqui.</p>
+                </div>
+                <div class="story-grid">
+                    <article class="story-card reveal">
+                        <img src="images/ondetudocomecou.jpeg" alt="Primeiros momentos juntos">
+                        <div>
+                            <span>Capítulo 1</span>
+                            <h3>Onde tudo começou</h3>
+                            <p>Um encontro simples, uma conversa que parecia não ter fim e a certeza de que havia algo especial.</p>
+                        </div>
+                    </article>
+                    <article class="story-card reveal">
+                        <img src="images/WhatsApp Image 2026-03-16 at 21.17.04.jpeg" alt="Viagem inesquecível do casal">
+                        <div>
+                            <span>Capítulo 2</span>
+                            <h3>Nossos melhores caminhos</h3>
+                            <p>Entre viagens, risadas e novos sonhos, aprendemos que amor também e parceria no dia a dia.</p>
+                        </div>
+                    </article>
+                    <article class="story-card reveal">
+                        <img src="images/WhatsApp Image 2026-03-16 at 21.17.05 (1).jpeg" alt="Pedido de casamento">
+                        <div>
+                            <span>Capítulo 3</span>
+                            <h3>O "sim" que mudou tudo</h3>
+                            <p>Um pedido cheio de emoção, um abraço apertado e a promessa de uma vida inteira juntos.</p>
+                        </div>
+                    </article>
+                    <article class="story-card reveal">
+                        <img src="images/final.jpeg" alt="Noivos celebrando o noivado">
+                        <div>
+                            <span>Capítulo 4</span>
+                            <h3>Preparando o grande dia</h3>
+                            <p>Cada escolha, cada detalhe e cada oração tem um único objetivo: celebrar o nosso amor com quem amamos.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="details-section" id="detalhes">
+            <div class="container">
+                <div class="section-head reveal">
+                    <p class="section-label">Details</p>
+                    <h2>Informações essenciais do casamento</h2>
+                </div>
+
+                <div class="program-section reveal">
+                    <h3 class="program-title">O Cronograma</h3>
+                    <ul class="program-timeline">
+                        <li class="timeline-item">
+                            <span class="timeline-time">16:00</span>
+                            <div class="timeline-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="presentation">
+                                    <circle cx="9" cy="11" r="4.5"></circle>
+                                    <circle cx="15" cy="13" r="4.5"></circle>
+                                </svg>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>A Cerimônia</h4>
+                                <p>Início da celebração e bênção matrimonial.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <span class="timeline-time">18:00</span>
+                            <div class="timeline-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="presentation">
+                                    <path d="M6 4h12l-2 7a4 4 0 0 1-8 0L6 4Z"></path>
+                                    <path d="M12 15v5"></path>
+                                </svg>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Coquetel de Boas-vindas</h4>
+                                <p>Recepção leve para brindar os primeiros momentos.</p>
+                            </div>
+                        </li>
+                        <li class="timeline-item">
+                            <span class="timeline-time">20:00</span>
+                            <div class="timeline-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="presentation">
+                                    <path d="M7 4h4v6a2 2 0 1 1-4 0V4Z"></path>
+                                    <path d="M13 4h4v8a2 2 0 1 1-4 0V4Z"></path>
+                                    <path d="M9 14v6"></path>
+                                    <path d="M15 16v4"></path>
+                                </svg>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Jantar e Brinde</h4>
+                                <p>Momento de celebração à mesa com família e amigos.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="location-block reveal">
+                    <p class="location-name">Paróquia Nossa Senhora Mãe da Igreja</p>
+                    <p class="location-address">Av. Brg. Manoel Rodrigues Jordão, 761 | Jardim Silveira - Barueri/SP | CEP: 06433-010</p>
+                    <a
+                        class="location-link"
+                        href="https://www.google.com/maps?q=Par%C3%B3quia%20Nossa%20Senhora%20M%C3%A3e%20da%20Igreja"
+                        target="_blank"
+                        rel="noopener noreferrer">Como Chegar</a>
+                </div>
+
+                <div class="location-block reveal">
+                    <p class="location-name">Chacara Alfa Ecologia</p>
+                    <p class="location-address">R. do Córrego, 21 - Cururuquara, Santana de Parnaíba - SP, 06524-110, Brasil</p>
+                    <a
+                        class="location-link"
+                        href="https://www.google.com/maps?q=Chacara%20Alfa%20Ecologia"
+                        target="_blank"
+                        rel="noopener noreferrer">Como Chegar</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section" id="faq">
+            <div class="container">
+                <div class="section-head reveal">
+                    <p class="section-label">FAQ</p>
+                    <h2>Perguntas frequentes</h2>
+                    <p>Tudo o que você precisa saber para aproveitar esse dia com a gente.</p>
+                </div>
+                <div class="faq-list">
+                    <details class="faq-item reveal">
+                        <summary>Qual e o traje recomendado?</summary>
+                        <p>Traje social elegante. Queremos que você se sinta lindo(a), confortável e pronto(a) para celebrar.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Haverá estacionamento?</summary>
+                        <p>Sim. O local conta com estacionamento para convidados e apoio na chegada para facilitar o acesso.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Tem sugestão de presentes?</summary>
+                        <p>Seu carinho já e o nosso maior presente, mas teremos lista de presentes e opção de presente em cota de lua de mel.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Como faço o RSVP?</summary>
+                        <p>Você pode confirmar abaixo no formulário ou pelo link rápido de WhatsApp. A confirmação ajuda muito na organização.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section class="rsvp-section" id="rsvp">
+            <div class="container reveal">
+                <p class="section-label">RSVP</p>
+                <h2>Confirme sua presença</h2>
+                <p class="rsvp-intro">Vamos amar celebrar com você. Se puder, confirme até 15/09/2026.</p>
+                <form class="rsvp-form" id="rsvpForm">
+                    <input type="text" name="nome" placeholder="Seu nome completo" required>
+                    <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+                    <select name="resposta" required>
+                        <option value="">Selecione sua resposta</option>
+                        <option value="Confirmo minha presença">Confirmo minha presença</option>
+                        <option value="Nao poderei comparecer">Infelizmente nao poderei ir</option>
+                        <option value="Ainda vou confirmar">Ainda vou confirmar</option>
+                    </select>
+                    <textarea name="mensagem" placeholder="Deixe uma mensagem carinhosa para os noivos"></textarea>
+                    <button type="submit" class="btn btn-primary">Enviar confirmação</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <img src="images/WhatsApp Image 2026-03-16 at 21.17.05 (3).jpeg" alt="João e Vitória abraçados">
+        <p>"Escolhemos um ao outro todos os dias. Obrigado por fazer parte desse sonho."</p>
+        <small>Com amor, João & Vitória</small>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
