@@ -620,7 +620,6 @@
         bottom: 2.5rem;
     }
 }
-}
 
 .burst-particle.active {
     animation: lightBurst 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -1253,6 +1252,410 @@ h2 {
 
 .rsvp-section {
     text-align: center;
+}
+
+/* ========== LISTA DE PRESENTES ========== */
+
+.gifts-section {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(238, 244, 251, 0.85) 100%);
+}
+
+.gifts-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.gifts-search-wrap {
+    flex: 1;
+    min-width: min(100%, 320px);
+}
+
+.gifts-search {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.85rem 1.2rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    box-shadow: 0 8px 24px rgba(63, 88, 117, 0.06);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.gifts-search:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(127, 157, 189, 0.2);
+}
+
+.gifts-stats {
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.gifts-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+    animation: giftsFadeIn 0.5s ease forwards;
+}
+
+.gifts-filter-btn {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    background: var(--surface);
+    color: #4a6077;
+    font: inherit;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.gifts-filter-btn:hover {
+    border-color: rgba(88, 119, 154, 0.45);
+    color: var(--accent-deep);
+}
+
+.gifts-filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.gifts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.2rem;
+    max-height: 460px;
+    overflow-y: auto;
+    padding-right: 0.2rem;
+    animation: giftsFadeIn 0.65s ease forwards;
+    scrollbar-gutter: stable;
+}
+
+.gifts-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.gifts-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.gifts-grid::-webkit-scrollbar-thumb {
+    background: rgba(88, 119, 154, 0.35);
+    border-radius: 999px;
+}
+
+@keyframes giftsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.gift-card {
+    border: 1px solid rgba(88, 119, 154, 0.18);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 249, 253, 0.9));
+    box-shadow: 0 12px 28px rgba(63, 88, 117, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.gift-card:hover:not(.gift-card--unavailable) {
+    transform: translateY(-3px);
+    border-color: rgba(88, 119, 154, 0.42);
+    box-shadow: 0 22px 48px rgba(63, 88, 117, 0.14);
+}
+
+.gift-card-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    flex-wrap: wrap;
+}
+
+.gift-card-meta {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+    flex: 1 1 260px;
+}
+
+.gift-card-category {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    line-height: 1.5;
+}
+
+.gift-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    line-height: 1.2;
+    color: #3b5776;
+    overflow-wrap: anywhere;
+}
+
+.gift-card--unavailable .gift-card-title {
+    color: #8a9aad;
+}
+
+.gift-card-hint,
+.gift-card-reserved-by {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+.gift-card-reserved-by {
+    font-style: italic;
+}
+
+.gift-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.gift-card-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(127, 157, 189, 0.12);
+    color: var(--accent-deep);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.gift-card--unavailable .gift-card-status {
+    background: rgba(139, 154, 171, 0.14);
+    color: #7d8b9a;
+}
+
+.gift-card-btn {
+    min-width: 132px;
+    border: 1px solid rgba(88, 119, 154, 0.42);
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--accent-deep);
+    font: inherit;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.gift-card-btn:hover:not(:disabled) {
+    background: rgba(127, 157, 189, 0.12);
+    border-color: rgba(88, 119, 154, 0.65);
+}
+
+.gift-card-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background: #eef2f7;
+    color: #8a9aad;
+    border-color: #d6e0eb;
+}
+
+.gifts-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--line);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    color: var(--muted);
+}
+
+.gifts-empty p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: #5d7289;
+}
+
+/* Modal de reserva */
+.gift-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.gift-modal.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.gift-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(43, 55, 72, 0.45);
+    backdrop-filter: blur(4px);
+}
+
+.gift-modal-dialog {
+    position: relative;
+    width: min(440px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.6rem;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: 0 28px 60px rgba(43, 55, 72, 0.22);
+    transform: translateY(16px) scale(0.98);
+    transition: transform 0.3s ease;
+}
+
+.gift-modal.open .gift-modal-dialog {
+    transform: none;
+}
+
+.gift-modal-close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.gift-modal-close:hover {
+    color: var(--accent-deep);
+    border-color: rgba(88, 119, 154, 0.45);
+}
+
+.gift-modal-ornament {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    border: 1px solid rgba(88, 119, 154, 0.2);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(234, 241, 248, 0.95));
+    color: var(--accent-deep);
+    font-size: 1.5rem;
+}
+
+.gift-modal-dialog h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.75rem;
+    color: #3b5776;
+    margin-bottom: 0.5rem;
+}
+
+.gift-modal-text {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 1rem;
+}
+
+.gift-modal-form {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.gift-modal-form input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.95rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+}
+
+.gift-modal-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(127, 157, 189, 0.2);
+}
+
+.gift-modal-form button {
+    justify-self: stretch;
+}
+
+@media (max-width: 980px) {
+    .gifts-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .gift-card-main {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .gift-card-actions {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .gift-card-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .gifts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gifts-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .gifts-stats {
+        text-align: center;
+    }
 }
 
 .rsvp-intro {

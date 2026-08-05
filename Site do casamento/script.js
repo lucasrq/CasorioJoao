@@ -325,6 +325,7 @@ updateCountdown();
 const SUPABASE_URL = 'https://sxxucfbnzowjkasdkvht.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN4eHVjZmJuem93amthc2Rrdmh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODg1MzYsImV4cCI6MjA5MjQ2NDUzNn0.FrxSBRsk0d0ztXpxQQPqvBIuPNcoGTDJNqUSDjNhhFs';
 const TABLE_NAME = 'rsvp_confirmacoes';
+const GIFT_RESERVATIONS_TABLE = 'gift_reservations';
 
 async function enviarRsvpParaSupabase(dados) {
     try {
@@ -346,6 +347,88 @@ async function enviarRsvpParaSupabase(dados) {
         return { success: true };
     } catch (error) {
         console.error('Erro Supabase:', error);
+        throw error;
+    }
+}
+
+async function buscarReservasDePresentesSupabase() {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${GIFT_RESERVATIONS_TABLE}?select=gift_id,guest_name,reserved_at`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Erro ao buscar reservas');
+        }
+
+        const reservas = await response.json();
+        return reservas.reduce((acc, item) => {
+            acc[item.gift_id] = {
+                guestName: item.guest_name,
+                reservedAt: item.reserved_at
+            };
+            return acc;
+        }, {});
+    } catch (error) {
+        console.error('Erro ao buscar reservas do Supabase:', error);
+        throw error;
+    }
+}
+
+async function reservarPresenteSupabase(giftId, guestName) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${GIFT_RESERVATIONS_TABLE}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({
+                gift_id: giftId,
+                guest_name: guestName,
+                reserved_at: new Date().toISOString()
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Erro ao reservar presente');
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao reservar presente:', error);
+        throw error;
+    }
+}
+
+async function cancelarReservaPresenteSupabase(giftId, guestName) {
+    try {
+        const query = `?gift_id=eq.${encodeURIComponent(giftId)}&guest_name=eq.${encodeURIComponent(guestName)}`;
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${GIFT_RESERVATIONS_TABLE}${query}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Erro ao desfazer reserva');
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error('Erro ao cancelar reserva:', error);
         throw error;
     }
 }
@@ -383,3 +466,296 @@ rsvpForm?.addEventListener('submit', async (event) => {
         botao.textContent = 'Enviar confirmação';
     }
 });
+
+/* ========== LISTA DE PRESENTES ========== */
+
+class GiftRegistry {
+    constructor() {
+        this.grid = document.getElementById('giftsGrid');
+        this.filters = document.getElementById('giftsFilters');
+        this.searchInput = document.getElementById('giftsSearch');
+        this.statsEl = document.getElementById('giftsStats');
+        this.modal = document.getElementById('giftModal');
+        this.modalBackdrop = document.getElementById('giftModalBackdrop');
+        this.modalClose = document.getElementById('giftModalClose');
+        this.modalImage = document.getElementById('giftModalImage');
+        this.modalTitle = document.getElementById('giftModalTitle');
+        this.modalText = document.getElementById('giftModalText');
+        this.modalId = document.getElementById('giftModalId');
+        this.modalAction = document.getElementById('giftModalAction');
+        this.modalName = document.getElementById('giftModalName');
+        this.reserveForm = document.getElementById('giftReserveForm');
+        this.modalSubmitBtn = this.reserveForm?.querySelector('button[type="submit"]');
+
+        this.activeCategory = 'all';
+        this.searchTerm = '';
+        this.reservations = this.loadLocalReservations();
+
+        if (!this.grid) return;
+
+        if (typeof GIFT_CATEGORIES === 'undefined') {
+            this.grid.innerHTML = `
+                <div class="gifts-empty">
+                    <p>Não foi possível carregar a lista de presentes.</p>
+                    <small>Verifique se o arquivo gifts-data.js está no servidor.</small>
+                </div>
+            `;
+            return;
+        }
+
+        this.buildFilters();
+        this.bindEvents();
+        this.render();
+        this.loadGiftAvailability().then(() => this.render()).catch(() => {
+            this.render();
+        });
+    }
+
+    getAllGifts() {
+        return GIFT_CATEGORIES.flatMap((category) =>
+            category.items.map((item) => ({
+                ...item,
+                categoryId: category.id,
+                categoryName: category.name
+            }))
+        );
+    }
+
+    loadLocalReservations() {
+        try {
+            const stored = localStorage.getItem('giftReservations');
+            return stored ? JSON.parse(stored) : {};
+        } catch {
+            return {};
+        }
+    }
+
+    saveLocalReservations() {
+        localStorage.setItem('giftReservations', JSON.stringify(this.reservations));
+    }
+
+    async loadGiftAvailability() {
+        try {
+            const remoteReservations = await buscarReservasDePresentesSupabase();
+            this.reservations = {
+                ...this.loadLocalReservations(),
+                ...remoteReservations
+            };
+            this.saveLocalReservations();
+            return this.reservations;
+        } catch (error) {
+            this.reservations = this.loadLocalReservations();
+            return this.reservations;
+        }
+    }
+
+    async reserveGift(giftId, guestName) {
+        await reservarPresenteSupabase(giftId, guestName);
+        this.reservations[giftId] = {
+            guestName,
+            reservedAt: new Date().toISOString()
+        };
+        this.saveLocalReservations();
+        return { success: true };
+    }
+
+    async cancelGiftReservation(giftId, guestName) {
+        await cancelarReservaPresenteSupabase(giftId, guestName);
+        delete this.reservations[giftId];
+        this.saveLocalReservations();
+        return { success: true };
+    }
+
+    buildFilters() {
+        const buttons = [
+            { id: 'all', label: 'Todos' },
+            ...GIFT_CATEGORIES.map((cat) => ({ id: cat.id, label: cat.name }))
+        ];
+
+        this.filters.innerHTML = buttons.map((btn) =>
+            `<button type="button" class="gifts-filter-btn${btn.id === 'all' ? ' active' : ''}" data-category="${btn.id}" role="tab" aria-selected="${btn.id === 'all'}">${btn.label}</button>`
+        ).join('');
+    }
+
+    getFilteredGifts() {
+        const term = this.searchTerm.trim().toLowerCase();
+
+        return this.getAllGifts().filter((gift) => {
+            const matchesCategory = this.activeCategory === 'all' || gift.categoryId === this.activeCategory;
+            const matchesSearch = !term ||
+                gift.name.toLowerCase().includes(term) ||
+                gift.categoryName.toLowerCase().includes(term);
+            return matchesCategory && matchesSearch;
+        });
+    }
+
+    updateStats(gifts) {
+        const total = this.getAllGifts().length;
+        const unavailable = Object.keys(this.reservations).length;
+        const available = total - unavailable;
+        const visible = gifts.length;
+
+        this.statsEl.textContent = `${available} disponíveis · ${visible} exibidos`;
+    }
+
+    renderGiftCard(gift) {
+        const reservation = this.reservations[gift.id];
+        const isUnavailable = Boolean(reservation);
+
+        return `
+            <article class="gift-card${isUnavailable ? ' gift-card--unavailable' : ''}" data-gift-id="${gift.id}">
+                <div class="gift-card-main">
+                    <div class="gift-card-meta">
+                        <span class="gift-card-category">${gift.categoryName}</span>
+                        <h3 class="gift-card-title">${gift.name}</h3>
+                        ${isUnavailable ? `<p class="gift-card-reserved-by">Reservado por ${reservation.guestName}</p>` : '<p class="gift-card-hint">Escolha este item para reservar com a nossa família.</p>'}
+                    </div>
+                    <div class="gift-card-actions">
+                        <span class="gift-card-status">${isUnavailable ? 'Indisponível' : 'Disponível'}</span>
+                        <button type="button" class="gift-card-btn" data-action="${isUnavailable ? 'cancel' : 'reserve'}">
+                            ${isUnavailable ? 'Desfazer' : 'Reservar'}
+                        </button>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    render() {
+        const gifts = this.getFilteredGifts();
+        this.updateStats(gifts);
+
+        if (gifts.length === 0) {
+            this.grid.innerHTML = `
+                <div class="gifts-empty">
+                    <p>Nenhum presente encontrado.</p>
+                    <small>Tente outra busca ou categoria.</small>
+                </div>
+            `;
+            return;
+        }
+
+        this.grid.innerHTML = gifts.map((gift) => this.renderGiftCard(gift)).join('');
+    }
+
+    openModal(giftId, action = 'reserve') {
+        const gift = this.getAllGifts().find((item) => item.id === giftId);
+        if (!gift) return;
+
+        if (action === 'reserve' && this.reservations[giftId]) return;
+        if (action === 'cancel' && !this.reservations[giftId]) return;
+
+        this.modalId.value = gift.id;
+        this.modalTitle.textContent = gift.name;
+        this.modalAction.value = action;
+        this.modalImage?.removeAttribute('src');
+        this.modalImage?.setAttribute('alt', gift.name);
+        this.modalName.value = '';
+
+        if (action === 'cancel') {
+            this.modalText.textContent = 'Informe o nome usado para reservar este presente para desfazer a reserva.';
+            this.modalSubmitBtn.textContent = 'Desfazer reserva';
+        } else {
+            this.modalText.textContent = 'Informe seu nome para reservar este presente e deixe o carinho de uma forma elegante e simples.';
+            this.modalSubmitBtn.textContent = 'Confirmar reserva';
+        }
+
+        this.modal.classList.add('open');
+        this.modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        this.modalName.focus();
+    }
+
+    closeModal() {
+        this.modal.classList.remove('open');
+        this.modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        this.reserveForm.reset();
+        this.modalAction.value = 'reserve';
+        this.modalSubmitBtn.textContent = 'Confirmar reserva';
+        this.modalText.textContent = 'Informe seu nome para reservar este presente e deixe o carinho de uma forma elegante e simples.';
+    }
+
+    bindEvents() {
+        this.filters.addEventListener('click', (event) => {
+            const button = event.target.closest('.gifts-filter-btn');
+            if (!button) return;
+
+            this.activeCategory = button.dataset.category;
+            this.filters.querySelectorAll('.gifts-filter-btn').forEach((btn) => {
+                const isActive = btn === button;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', String(isActive));
+            });
+            this.render();
+        });
+
+        this.searchInput?.addEventListener('input', (event) => {
+            this.searchTerm = event.target.value;
+            this.render();
+        });
+
+        this.grid.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-action]');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const card = button.closest('.gift-card');
+            if (!card) return;
+
+            if (action === 'reserve' || action === 'cancel') {
+                this.openModal(card.dataset.giftId, action);
+            }
+        });
+
+        this.modalClose?.addEventListener('click', () => this.closeModal());
+        this.modalBackdrop?.addEventListener('click', () => this.closeModal());
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && this.modal.classList.contains('open')) {
+                this.closeModal();
+            }
+        });
+
+        this.reserveForm?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const giftId = this.modalId.value;
+            const guestName = this.modalName.value.trim();
+            const action = this.modalAction.value;
+            if (!giftId || !guestName) return;
+
+            const submitBtn = this.reserveForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = action === 'cancel' ? 'Desfazendo...' : 'Reservando...';
+
+            try {
+                if (action === 'cancel') {
+                    await this.cancelGiftReservation(giftId, guestName);
+                } else {
+                    await this.reserveGift(giftId, guestName);
+                }
+
+                this.closeModal();
+                this.render();
+            } catch (error) {
+                const message = action === 'cancel' ? 'Erro ao desfazer reserva' : 'Erro ao reservar';
+                alert(`${message}: ${error.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = action === 'cancel' ? 'Desfazer reserva' : 'Confirmar reserva';
+            }
+        });
+    }
+}
+
+function initGiftRegistry() {
+    if (window.__giftRegistryInitialized) return;
+    window.__giftRegistryInitialized = true;
+    new GiftRegistry();
+}
+
+document.addEventListener('DOMContentLoaded', initGiftRegistry);
+
+if (document.readyState !== 'loading') {
+    initGiftRegistry();
+}

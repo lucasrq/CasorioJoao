@@ -123,6 +123,7 @@
                 <li><a href="#historia">Our Love Story</a></li>
                 <li><a href="#detalhes">Details</a></li>
                 <li><a href="#faq">FAQ</a></li>
+                <li><a href="#presentes">Lista de Presentes</a></li>
                 <li><a href="#rsvp">RSVP</a></li>
             </ul>
         </nav>
@@ -305,7 +306,7 @@
                     </details>
                     <details class="faq-item reveal">
                         <summary>Tem sugestão de presentes?</summary>
-                        <p>Seu carinho já e o nosso maior presente, mas teremos lista de presentes e opção de presente em cota de lua de mel.</p>
+                        <p>Seu carinho já é o nosso maior presente! Confira nossa <a href="#presentes" class="location-link" style="margin-top:0;display:inline;padding:0.3rem 0.7rem;font-size:inherit;">lista de presentes</a> e escolha um item especial para nós.</p>
                     </details>
                     <details class="faq-item reveal">
                         <summary>Como faço o RSVP?</summary>
@@ -314,6 +315,44 @@
                 </div>
             </div>
         </section>
+
+        <section class="gifts-section" id="presentes">
+            <div class="container">
+                <div class="section-head reveal">
+                    <p class="section-label">Lista de Presentes</p>
+                    <h2>Escolha um presente especial para nós</h2>
+                    <p>Seu carinho já é o nosso maior presente. Se desejar nos presentear, escolha um item abaixo — ele ficará reservado para você.</p>
+                </div>
+
+                <div class="gifts-toolbar reveal">
+                    <div class="gifts-search-wrap">
+                        <input type="search" id="giftsSearch" class="gifts-search" placeholder="Buscar presente..." aria-label="Buscar presente">
+                    </div>
+                    <div class="gifts-stats" id="giftsStats" aria-live="polite"></div>
+                </div>
+
+                <div class="gifts-filters" id="giftsFilters" role="tablist" aria-label="Filtrar por categoria"></div>
+
+                <div class="gifts-grid" id="giftsGrid"></div>
+            </div>
+        </section>
+
+        <div class="gift-modal" id="giftModal" aria-hidden="true">
+            <div class="gift-modal-backdrop" id="giftModalBackdrop"></div>
+            <div class="gift-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="giftModalTitle">
+                <button type="button" class="gift-modal-close" id="giftModalClose" aria-label="Fechar">&times;</button>
+                <div class="gift-modal-ornament" aria-hidden="true">♡</div>
+                <p class="section-label">Reservar presente</p>
+                <h3 id="giftModalTitle"></h3>
+                <p class="gift-modal-text" id="giftModalText">Informe seu nome para reservar este presente e deixe o carinho de uma forma elegante e simples.</p>
+                <form id="giftReserveForm" class="gift-modal-form">
+                    <input type="hidden" id="giftModalId" name="giftId">
+                    <input type="hidden" id="giftModalAction" name="giftAction" value="reserve">
+                    <input type="text" id="giftModalName" name="guestName" placeholder="Seu nome completo" required autocomplete="name">
+                    <button type="submit" class="btn btn-primary" id="giftModalSubmitBtn">Confirmar reserva</button>
+                </form>
+            </div>
+        </div>
 
         <section class="rsvp-section" id="rsvp">
             <div class="container reveal">
@@ -342,6 +381,7 @@
         <small>Com amor, João & Vitória</small>
     </footer>
 
+    <script src="gifts-data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
