@@ -601,6 +601,9 @@ class GiftRegistry {
     renderGiftCard(gift) {
         const reservation = this.reservations[gift.id];
         const isUnavailable = Boolean(reservation);
+        const productLink = gift.link
+            ? `<a class="gift-card-link" href="${gift.link}" target="_blank" rel="noopener noreferrer">Link para compra</a>`
+            : '';
 
         return `
             <article class="gift-card${isUnavailable ? ' gift-card--unavailable' : ''}" data-gift-id="${gift.id}">
@@ -612,6 +615,7 @@ class GiftRegistry {
                     </div>
                     <div class="gift-card-actions">
                         <span class="gift-card-status">${isUnavailable ? 'Indisponível' : 'Disponível'}</span>
+                        ${productLink}
                         <button type="button" class="gift-card-btn" data-action="${isUnavailable ? 'cancel' : 'reserve'}">
                             ${isUnavailable ? 'Desfazer' : 'Reservar'}
                         </button>
