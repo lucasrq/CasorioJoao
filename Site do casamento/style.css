@@ -1554,6 +1554,12 @@ h2 {
     font-style: italic;
 }
 
+.gift-card-reserved-name {
+    display: inline-block;
+    filter: blur(5px);
+    user-select: none;
+}
+
 .gift-card-actions {
     display: flex;
     align-items: center;

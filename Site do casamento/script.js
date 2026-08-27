@@ -611,7 +611,7 @@ class GiftRegistry {
                     <div class="gift-card-meta">
                         <span class="gift-card-category">${gift.categoryName}</span>
                         <h3 class="gift-card-title">${gift.name}</h3>
-                        ${isUnavailable ? `<p class="gift-card-reserved-by">Reservado por ${reservation.guestName}</p>` : '<p class="gift-card-hint">Escolha este item para reservar com a nossa família.</p>'}
+                        ${isUnavailable ? `<p class="gift-card-reserved-by">Reservado por <span class="gift-card-reserved-name">${reservation.guestName}</span></p>` : '<p class="gift-card-hint">Escolha este item para reservar com a nossa família.</p>'}
                     </div>
                     <div class="gift-card-actions">
                         <span class="gift-card-status">${isUnavailable ? 'Indisponível' : 'Disponível'}</span>
